@@ -1,0 +1,11 @@
+{
+    "name": "support-desk-app",
+    "version": "1.0.0",
+    "description": "Registering customer queries",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "author": "Barbara Tess",
+    "license": "MIT"
+}
