@@ -1,4 +1,4 @@
-import { User, validateUser } from '../models/User.js'
+import { User, validateUser, validateEmailAndPassword } from '../models/User.js'
 import bcrypt from 'bcrypt'
 import _ from 'lodash'
 
@@ -22,7 +22,7 @@ export async function registerUser(req, res) {
     //If the user is new, add them to the db
     let newUser = new User(_.pick(req.body, ['name', 'email', 'password']))
 
-    //Hash the provided password before sving in the db
+    //Hash the provided password before saving in the db
     try {
         newUser.password = await bcrypt.hash(newUser.password, 10)
     } catch (error) {
@@ -31,12 +31,40 @@ export async function registerUser(req, res) {
     }
 
     //Save the new user in the db
+    //Status 201 as a new user's been added
     newUser = await newUser.save()
-    return res.send(_.pick(newUser, ['_id', 'name', 'email']))
+    return res.status(201).send(_.pick(newUser, ['_id', 'name', 'email']))
 }
 
-//Purpose: log in a user
+//Purpose: log in a user and send an auth token
 //Access: public
 export async function loginUser(req, res) {
-    res.send('Login user.')
+    //Check that the credentials provided are formatted correctly: client side validation
+    const { error } = validateEmailAndPassword(req.body)
+    if (error) {
+        let messages = []
+        error.details.forEach((detail) => messages.push(detail.message))
+        return res.status(400).send(messages.join('\n'))
+    }
+
+    const user = await User.findOne({ email: req.body.email })
+
+    //Confirm that the user exists and the password entered is correct
+    if (user && (await bcrypt.compare(req.body.password, user.password))) {
+        const token = user.generateAuthToken()
+        return res.send(`Your token is: ${token}`)
+    } else {
+        return res.status(401).send('Invalid login details.')
+    }
+}
+
+export async function getCurrentUser(req, res) {
+    //Populate the current user object using the user doc obtained from the authorized middleware
+    const user = {
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+    }
+
+    return res.send(user)
 }
