@@ -16,7 +16,8 @@ export async function registerUser(req, res) {
     //Check if the user already exists
     const existingUser = await User.findOne({ email: req.body.email })
     if (existingUser) {
-        return res.status(400).send('User already exists.')
+        res.status(400)
+        throw new Error('User already exists.')
     }
 
     //If the user is new, add them to the db
@@ -33,7 +34,11 @@ export async function registerUser(req, res) {
     //Save the new user in the db
     //Status 201 as a new user's been added
     newUser = await newUser.save()
-    return res.status(201).send(_.pick(newUser, ['_id', 'name', 'email']))
+
+    //Generate & return a jwt for the new user
+    const token = newUser.generateAuthToken()
+    const newUserInfo = _.pick(newUser, ['_id', 'name', 'email'])
+    return res.status(201).json({ ...newUserInfo, token })
 }
 
 //Purpose: log in a user and send an auth token
@@ -52,9 +57,11 @@ export async function loginUser(req, res) {
     //Confirm that the user exists and the password entered is correct
     if (user && (await bcrypt.compare(req.body.password, user.password))) {
         const token = user.generateAuthToken()
-        return res.send(`Your token is: ${token}`)
+        //const userInfo = _.pick(user, ['_id', 'name', 'email'])
+        return res.send(token)
     } else {
-        return res.status(401).send('Invalid login details.')
+        res.status(401)
+        throw new Error('Invalid login details.')
     }
 }
 

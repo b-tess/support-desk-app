@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { FaUser } from 'react-icons/fa'
 import { useSelector, useDispatch } from 'react-redux'
-import { register } from '../features/auth/authSlice'
+import { register, reset } from '../features/auth/authSlice'
+import Spinner from '../components/Spinner'
 
 //useSelector gives access to the properties in the global state
 //useDispatch is used to dispatch/send actions to the reducer i.e. authSlice.reducer/authReducer
@@ -22,11 +24,27 @@ function Register() {
 
     //Initialize the useDispatch hook
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     //Destructure a specific global state that's defined in the reducer in the store
     const { user, isError, isSuccess, isLoading, message } = useSelector(
         (state) => state.auth
     )
+
+    useEffect(() => {
+        //If an error is present, let the user know
+        if (isError) {
+            toast.error(message)
+        }
+
+        //Redirect if user data has been populated successfully in the backend
+        if (isSuccess && user) {
+            navigate('/')
+        }
+
+        //Call the reset function to put the state back to it's initial setup
+        dispatch(reset())
+    }, [isError, message, isSuccess, user, navigate, dispatch])
 
     function onChange(e) {
         setFormData((prevState) => ({
@@ -50,6 +68,10 @@ function Register() {
 
             dispatch(register(userData))
         }
+    }
+
+    if (isLoading) {
+        return <Spinner />
     }
 
     return (

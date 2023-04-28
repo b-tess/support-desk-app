@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { FaSignInAlt } from 'react-icons/fa'
+import { useSelector, useDispatch } from 'react-redux'
+import { login, reset } from '../features/auth/authSlice'
+import Spinner from '../components/Spinner'
 
 function Login() {
     //Create default state for the form input fields
@@ -13,6 +17,26 @@ function Login() {
     //instead of using the dot operator
     const { email, password } = formData
 
+    const dispatch = useDispatch()
+
+    const { user, isError, isSuccess, isLoading, message } = useSelector(
+        (state) => state.auth
+    )
+
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (isError) {
+            toast.error(message)
+        }
+
+        if (isSuccess && user) {
+            navigate('/')
+        }
+
+        dispatch(reset())
+    }, [isError, message, isSuccess, user, navigate, dispatch])
+
     function onChange(e) {
         setFormData((prevState) => ({
             ...prevState,
@@ -22,6 +46,17 @@ function Login() {
 
     function onSubmit(e) {
         e.preventDefault()
+
+        const userData = {
+            email,
+            password,
+        }
+
+        dispatch(login(userData))
+    }
+
+    if (isLoading) {
+        return <Spinner />
     }
 
     return (

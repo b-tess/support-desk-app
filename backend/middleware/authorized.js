@@ -24,9 +24,11 @@ export default async function authorized(req, res, next) {
             req.user = await User.findById(decoded._id).select('-password')
             next()
         } catch (error) {
-            return res.status(401).send('Not authorized.')
+            res.status(401)
+            throw new Error('Not authorized.')
         }
     } else {
-        return res.status(401).send('Not authorized. No token provided.')
+        res.status(401)
+        throw new Error('Not authorized. No token provided.')
     }
 }

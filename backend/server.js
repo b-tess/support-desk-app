@@ -8,7 +8,7 @@ import homeRouter from './routes/homeRouter.js'
 import usersRouter from './routes/usersRouter.js'
 import errorLog from './middleware/errorLog.js'
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000
 
 //Connect to database
 dbConnect()
