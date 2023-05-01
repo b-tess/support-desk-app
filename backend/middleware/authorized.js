@@ -1,6 +1,6 @@
+import 'express-async-errors'
 import jwt from 'jsonwebtoken'
 import { User } from '../models/User.js'
-import 'express-async-errors'
 
 export default async function authorized(req, res, next) {
     let token
@@ -22,6 +22,7 @@ export default async function authorized(req, res, next) {
 
             //Get the user linked to the token
             req.user = await User.findById(decoded._id).select('-password')
+            // console.log(typeof req.user.id)
             next()
         } catch (error) {
             res.status(401)

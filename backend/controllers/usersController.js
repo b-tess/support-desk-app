@@ -57,8 +57,8 @@ export async function loginUser(req, res) {
     //Confirm that the user exists and the password entered is correct
     if (user && (await bcrypt.compare(req.body.password, user.password))) {
         const token = user.generateAuthToken()
-        //const userInfo = _.pick(user, ['_id', 'name', 'email'])
-        return res.send(token)
+        const userInfo = _.pick(user, ['_id', 'name', 'email'])
+        return res.send({ ...userInfo, token })
     } else {
         res.status(401)
         throw new Error('Invalid login details.')
@@ -68,7 +68,7 @@ export async function loginUser(req, res) {
 export async function getCurrentUser(req, res) {
     //Populate the current user object using the user doc obtained from the authorized middleware
     const user = {
-        id: req.user._id,
+        id: req.user.id,
         name: req.user.name,
         email: req.user.email,
     }

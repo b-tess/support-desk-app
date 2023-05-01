@@ -6,6 +6,7 @@ import 'colors'
 import dbConnect from './dbConnect/dbConnect.js'
 import homeRouter from './routes/homeRouter.js'
 import usersRouter from './routes/usersRouter.js'
+import ticketsRouter from './routes/ticketsRouter.js'
 import errorLog from './middleware/errorLog.js'
 
 const PORT = process.env.PORT || 3000
@@ -18,6 +19,7 @@ const app = e()
 app.use(e.json())
 app.use('/', homeRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/tickets', ticketsRouter)
 app.use(errorLog)
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}...`))
