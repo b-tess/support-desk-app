@@ -7,8 +7,12 @@ import {
     updateTicket,
     deleteTicket,
 } from '../controllers/ticketsController.js'
+import notesRouter from './notesRouter.js'
 
 const ticketsRouter = e.Router()
+
+//Re-route the ticketsRouter into the notesRouter to gain access to the notes endpoint
+ticketsRouter.use('/:ticketId/notes', notesRouter)
 
 //This route prefix allows chaining of routes that hit the same endpoint
 ticketsRouter
