@@ -4,12 +4,13 @@ import { createTicket, reset } from '../features/tickets/ticketSlice'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Spinner from '../components/Spinner'
+import BackButton from '../components/BackButton'
 
 function NewTicket() {
     //Get the user & others from the global state in Redux
     const { user } = useSelector((state) => state.auth)
     const { isLoading, isSuccess, isError, message } = useSelector(
-        (state) => state.ticket
+        (state) => state.tickets
     )
     //Create a local state to manage the form on this page
     const [name] = useState(user.name)
@@ -44,6 +45,8 @@ function NewTicket() {
 
     return (
         <>
+            <BackButton url={'/'} />
+
             <section className='heading'>
                 <h1>Create New Ticket</h1>
                 <p>Please fill out the form below.</p>

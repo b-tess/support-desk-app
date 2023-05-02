@@ -13,7 +13,7 @@ export async function getTickets(req, res) {
 
     //If this user doesn't have any tickets, return an appropriate response
     if (tickets.length === 0) {
-        return res.send('No tickets for the current user.')
+        return res.send('The current user has no tickets.')
     }
 
     return res.send(tickets)
