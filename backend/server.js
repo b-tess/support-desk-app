@@ -1,3 +1,4 @@
+import path from 'path'
 import * as dotenv from 'dotenv'
 dotenv.config()
 import e from 'express'
@@ -14,9 +15,20 @@ const PORT = process.env.PORT || 3000
 const app = e()
 
 app.use(e.json())
-app.use('/', homeRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/tickets', ticketsRouter)
+
+//Serve the frontend
+if (process.env.NODE_ENV === 'production') {
+    //Set build folder as static
+    app.use(e.static(path.join(__dirname, '../frontend/build')))
+    app.get('*', (req, res) => {
+        res.sendFile(__dirname, '../', 'frontend', 'build', 'index.html')
+    })
+} else {
+    app.use('/', homeRouter)
+}
+
 app.use(errorLog)
 
 //Connect to database before listening
