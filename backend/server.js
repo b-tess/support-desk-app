@@ -11,9 +11,6 @@ import errorLog from './middleware/errorLog.js'
 
 const PORT = process.env.PORT || 3000
 
-//Connect to database
-dbConnect()
-
 const app = e()
 
 app.use(e.json())
@@ -22,4 +19,7 @@ app.use('/api/users', usersRouter)
 app.use('/api/tickets', ticketsRouter)
 app.use(errorLog)
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}...`))
+//Connect to database before listening
+dbConnect().then(() => {
+    app.listen(PORT, () => console.log(`Listening on port ${PORT}...`))
+})
