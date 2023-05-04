@@ -1,4 +1,5 @@
 import path from 'path'
+import { fileURLToPath } from 'url'
 import * as dotenv from 'dotenv'
 dotenv.config()
 import e from 'express'
@@ -12,6 +13,9 @@ import errorLog from './middleware/errorLog.js'
 
 const PORT = process.env.PORT || 3000
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
 const app = e()
 
 app.use(e.json())
@@ -23,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
     //Set build folder as static
     app.use(e.static(path.join(__dirname, '../frontend/build')))
     app.get('*', (req, res) => {
-        res.sendFile(__dirname, '../frontend/build/index.html')
+        res.sendFile(__dirname, '../', 'frontend', 'build', 'index.html')
     })
 } else {
     app.use('/', homeRouter)
